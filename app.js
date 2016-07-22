@@ -18,11 +18,17 @@ app.use('/client', express.static(__dirname + '/client'));
 serv.listen(2000);
 console.log('Server initiated');
 
-
 // WEBSOCKETS
+// create list of sockets
+var SOCKET_LIST = {};
+
 var io = require('socket.io')(serv,{});               // loads file -> inits it -> returns io object
 io.sockets.on('connection', function(socket){         // if there is a connection -> following function will be ran
-  console.log('Socket connected');
+  socket.id = Math.random();                          // create random socket ID
+  socket.x = 0;                                       // assign x and y params to the socket
+  socket.y = 0;
+  SOCKET_LIST[socket.id] = socket;                    // add socket to the SOCKET_LIST
+  console.log('Socket ' + socket.id + ' connected');
 
   socket.on('Message to server', function(){          // receiving message
     console.log('Client message received')
@@ -40,3 +46,16 @@ io.sockets.on('connection', function(socket){         // if there is a connectio
     console.log('Player ' + data.playernum + ' has clicked on the button: ' + data.btntype);
   });
 });
+
+// LOOP every 1000ms/25
+setInterval(function(){
+  for(var i in SOCKET_LIST){
+    var socket = SOCKET_LIST[i];
+    socket.x++;
+    socket.y++;
+    socket.emit('newPosition', {
+      x:socket.x,
+      y:socket.y
+    });
+  }
+}, 1000/25);

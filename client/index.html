@@ -1,9 +1,15 @@
 Hello world
 
+<canvas id="ctx" width="500" height="500" style="border: 1px solid #000000;"></canvas>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
   // random player number
   var player = Math.random(100);
+
+  // create drawing context
+  var ctx = document.getElementById("ctx").getContext("2d");
+  // change font size
+  ctx.font = '30px Arial';
 
   // connect to server
   var socket = io();
@@ -13,8 +19,9 @@ Hello world
     contents:'RANDOM DATA HERE'
   });
 
-  socket.on('serverMsg', function(data){    // receiving message with attribute
-    console.log(data.msg);
+  socket.on('newPosition', function(data){    // receiving message with new player positions
+    ctx.clearRect(0, 0, 500, 500);
+    ctx.fillText('P', data.x, data.y)
   });
 
   var btn = function(){                     // function coupled to html button
