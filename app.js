@@ -24,7 +24,23 @@ var Player = function(id){
     x:250,
     y:250,
     id:id,
-    number:"" + Math.floor(10 * Math.random())
+    number:"" + Math.floor(10 * Math.random()),
+    pressingRight:false,
+    pressingLeft:false,
+    pressingUp:false,
+    pressingDown:false,
+    maxSpd:10
+  }
+
+  self.updatePosition = function(){
+    if(self.pressingRight)
+      self.x += self.maxSpd;
+    if(self.pressingLeft)
+      self.x -= self.maxSpd;
+    if(self.pressingUp)
+      self.y -= self.maxSpd;
+    if(self.pressingDown)
+      self.y += self.maxSpd;
   }
   return self;
 }
@@ -44,6 +60,17 @@ io.sockets.on('connection', function(socket){         // if there is a connectio
     delete PLAYER_LIST[socket.id];
   });
 
+  socket.on('keyPress', function(data){
+    if(data.inputId === 'left')
+      player.pressingLeft = data.state;
+    if(data.inputId === 'right')
+      player.pressingRight = data.state;
+    if(data.inputId === 'up')
+      player.pressingUp = data.state;
+    if(data.inputId === 'down')
+      player.pressingDown = data.state;
+  });
+
   socket.on('buttonclick', function(data){            // reveiving message with 2 attributes (handled by btn)
     console.log('Player ' + data.playernum + ' has clicked on the button: ' + data.btntype);
   });
@@ -54,8 +81,7 @@ setInterval(function(){
   var pack = [];                      // create a package to send to the client
   for(var i in PLAYER_LIST){          // for EACH socket in SOCKET_LIST
     var player = PLAYER_LIST[i];      // fetch Socket i
-    player.x++;                       // increment X of socket i
-    player.y++;                       // increment Y of socket i
+    player.updatePosition();
     pack.push({                       // push x & y DATA of EACH socket into the package
       x:player.x,
       y:player.y,
