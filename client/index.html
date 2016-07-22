@@ -1,27 +1,24 @@
-Hello world
-
+<!-- Setup Canvas -->
 <canvas id="ctx" width="500" height="500" style="border: 1px solid #000000;"></canvas>
+
+<!-- Load Libraries -->
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+<!-- Client Code -->
 <script>
-  // random player number
-  var player = Math.random(100);
+  // CANVAS
+  var ctx = document.getElementById("ctx").getContext("2d"); // create drawing context
+  ctx.font = '30px Arial';                                   // change canvas font size
 
-  // create drawing context
-  var ctx = document.getElementById("ctx").getContext("2d");
-  // change font size
-  ctx.font = '30px Arial';
+  // SOCKET
+  var socket = io();                        // connect to server
+  socket.emit('Client connecting ...');     // sending message
 
-  // connect to server
-  var socket = io();
-  socket.emit('Message to server');         // sending message
-
-  socket.emit('Sending data to server', {   // sending message with attribute
-    contents:'RANDOM DATA HERE'
-  });
-
-  socket.on('newPosition', function(data){    // receiving message with new player positions
-    ctx.clearRect(0, 0, 500, 500);
-    ctx.fillText('P', data.x, data.y)
+  socket.on('newPositions', function(data){  // receiving message with new player positions
+    ctx.clearRect(0, 0, 500, 500);           // CLEAR canvas
+    for(var i = 0; i < data.length; i++){
+      ctx.fillText(data[i].number, data[i].x, data[i].y);
+    }
   });
 
   var btn = function(){                     // function coupled to html button
