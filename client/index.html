@@ -1,5 +1,5 @@
 <!-- Setup Canvas -->
-<canvas id="ctx" width="500" height="500" style="border: 1px solid #000000;"></canvas>
+<canvas id="ctx" width="900" height="900" style="border: 1px solid #000000;"></canvas>
 
 <!-- Load Libraries -->
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -15,7 +15,7 @@
   socket.emit('Client connecting ...');     // sending message
 
   socket.on('newPositions', function(data){  // receiving message with new player positions
-    ctx.clearRect(0, 0, 500, 500);           // CLEAR canvas
+    ctx.clearRect(0, 0, 900, 900);           // CLEAR canvas
     for(var i = 0; i < data.length; i++){
       ctx.fillText(data[i].number, data[i].x, data[i].y);
     }
